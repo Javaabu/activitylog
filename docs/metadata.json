@@ -1,5 +1,5 @@
 {
-    "name": "{Your Package}",
-    "description": "{package description}",
+    "name": "Activity Log",
+    "description": "Customized version of spatie/laravel-activitylog",
     "version": "1"
 }

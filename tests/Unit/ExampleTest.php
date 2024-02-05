@@ -1,8 +1,8 @@
 <?php
 
-namespace Javaabu\{YourPackage}\Tests\Unit;
+namespace Javaabu\Activitylog\Tests\Unit;
 
-use Javaabu\{YourPackage}\Tests\TestCase;
+use Javaabu\Activitylog\Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
