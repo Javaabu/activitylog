@@ -13,9 +13,28 @@ class ActivitylogServiceProvider extends ServiceProvider
     {
         // declare publishes
         if ($this->app->runningInConsole()) {
+            $this->registerMigrations();
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'activitylog-migrations');
+
             $this->publishes([
                 __DIR__ . '/../config/config.php' => config_path('activitylog.php'),
             ], 'activitylog-config');
+        }
+    }
+
+
+    /**
+     * Register migration files.
+     *
+     * @return void
+     */
+    protected function registerMigrations()
+    {
+        if (Activitylog::$runsMigrations) {
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         }
     }
 

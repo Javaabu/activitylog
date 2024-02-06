@@ -11,4 +11,4 @@ This package is currently under development. If anything works, that's a surpris
 
 :::
 
-[Activity Log](https://github.com/Javaabu/activitylog) Customized version of spatie/laravel-activitylog.
+[Activity Log](https://github.com/Javaabu/activitylog) Customized version of [spatie/laravel-activitylog](https://spatie.be/docs/laravel-activitylog).
