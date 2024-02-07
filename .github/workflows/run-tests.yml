@@ -22,13 +22,13 @@ jobs:
             include:
                 -   laravel: 11.*
                     testbench: 9.*
-                    minimum-stability: dev
+                    carbon: ^2.63
                 -   laravel: 10.*
                     testbench: 8.*
-                    minimum-stability: stable
+                    carbon: ^2.63
                 -   laravel: 9.*
                     testbench: 7.*
-                    minimum-stability: stable
+                    carbon: ^2.63
             exclude:
                 -   laravel: 11.*
                     php: 8.1
@@ -54,7 +54,7 @@ jobs:
       -   name: Install dependencies
           run: |
               composer config repositories.laravel-activitylog vcs https://github.com/Javaabu/laravel-activitylog.git
-              composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+              composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.carbon }}" --no-interaction --no-update
               composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       -   name: Execute tests
