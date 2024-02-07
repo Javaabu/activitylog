@@ -53,6 +53,7 @@ jobs:
 
       -   name: Install dependencies
           run: |
+              composer config repositories vcs https://github.com/Javaabu/laravel-activitylog.git
               composer config minimum-stability ${{ matrix.minimum-stability }}
               composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
               composer update --${{ matrix.stability }} --prefer-dist --no-interaction
