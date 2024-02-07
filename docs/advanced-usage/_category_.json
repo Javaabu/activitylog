@@ -1,0 +1,10 @@
+{
+    "position": 1.5,
+    "label": "Advanced Usage",
+    "collapsible": true,
+    "collapsed": false,
+    "link": {
+        "type": "generated-index",
+        "slug": "/generators/_categories/advanced-usage"
+    }
+}

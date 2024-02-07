@@ -10,7 +10,30 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        fail-fast: true
+        matrix:
+            os: [ ubuntu-latest ]
+            php: [ 8.3, 8.2, 8.1 ]
+            laravel: [ 11.*, 10.*, 9.* ]
+            stability: [ prefer-lowest, prefer-stable ]
+            include:
+                -   laravel: 11.*
+                    testbench: 9.*
+                    minimum-stability: dev
+                -   laravel: 10.*
+                    testbench: 8.*
+                    minimum-stability: stable
+                -   laravel: 9.*
+                    testbench: 7.*
+                    minimum-stability: stable
+            exclude:
+                -   laravel: 11.*
+                    php: 8.1
+
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     steps:
       -   name: Checkout code
@@ -24,13 +47,15 @@ jobs:
       -   name: Setup PHP
           uses: shivammathur/setup-php@v2
           with:
-            php-version: 8.3
+            php-version: ${{ matrix.php }}
             extensions: curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, iconv
             coverage: none
 
       -   name: Install dependencies
           run: |
-            composer install --no-scripts --no-interaction
+              composer config minimum-stability ${{ matrix.minimum-stability }}
+              composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+              composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       -   name: Execute tests
           run: vendor/bin/phpunit

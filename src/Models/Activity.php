@@ -5,7 +5,7 @@ namespace Javaabu\Activitylog\Models;
 use App\Models\User;
 use Javaabu\Helpers\AdminModel\AdminModel;
 use Javaabu\Helpers\AdminModel\IsAdminModel;
-use App\Helpers\Activitylog\Enums\SubjectTypes;
+use Javaabu\Activitylog\SubjectTypes;
 use Spatie\Activitylog\Models\Activity as BaseActivity;
 
 class Activity extends BaseActivity implements AdminModel
@@ -60,7 +60,7 @@ class Activity extends BaseActivity implements AdminModel
 
     /**
      * With relations scope
-     * 
+     *
      * @param $query
      * @return
      */

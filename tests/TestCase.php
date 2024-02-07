@@ -2,13 +2,15 @@
 
 namespace Javaabu\Activitylog\Tests;
 
+use Javaabu\Activitylog\Models\Activity;
+use Javaabu\Helpers\HelpersServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Javaabu\Activitylog\ActivitylogServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -16,10 +18,16 @@ abstract class TestCase extends BaseTestCase
 
         $this->app['config']->set('session.serialization', 'php');
 
+        $this->app['config']->set('activitylog.activity_model', Activity::class);
+
     }
 
     protected function getPackageProviders($app)
     {
-        return [ActivitylogServiceProvider::class];
+        return [
+            HelpersServiceProvider::class,
+            \Spatie\Activitylog\ActivitylogServiceProvider::class,
+            ActivitylogServiceProvider::class,
+        ];
     }
 }
