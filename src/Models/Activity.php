@@ -49,7 +49,7 @@ class Activity extends BaseActivity implements AdminModel
      * Get name attribute
      * @return string
      */
-    public function getAdminLinkNameAttribute()
+    public function getAdminLinkNameAttribute(): string
     {
         if ($date = $this->created_at) {
             return __(':rel (:time)', ['rel' => $date->diffForHumans(), 'time' => $date->format('j M Y @ H:i')]);
