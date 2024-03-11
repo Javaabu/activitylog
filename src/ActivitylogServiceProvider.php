@@ -20,7 +20,7 @@ class ActivitylogServiceProvider extends ServiceProvider
             ], 'activitylog-migrations');
 
             $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('activitylog.php'),
+                __DIR__ . '/../config/activitylog.php' => config_path('activitylog.php'),
             ], 'activitylog-config');
         }
     }
@@ -44,6 +44,6 @@ class ActivitylogServiceProvider extends ServiceProvider
     public function register()
     {
         // merge package config with user defined config
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'activitylog');
+        $this->mergeConfigFrom(__DIR__ . '/../config/activitylog.php', 'activitylog');
     }
 }
