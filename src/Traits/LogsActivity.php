@@ -15,8 +15,8 @@ trait LogsActivity
         /** @var Model $this */
         return LogOptions::defaults()
             ->logOnly(static::$logAttributes ?? ['*'])
-            ->dontLogIfAttributesChangedOnly((static::$ignoreChangedAttributes ?? []))
-            ->logExcept(array_merge($this->getHidden(), (static::$logExceptAttributes ?? [])))
+            ->dontLogIfAttributesChangedOnly(static::$ignoreChangedAttributes ?? [])
+            ->logExcept(static::$logExceptAttributes ?? [])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }

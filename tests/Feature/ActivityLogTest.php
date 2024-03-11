@@ -32,6 +32,8 @@ class CategoryIgnoreHiddenSlug extends Model
 
     use LogsActivity;
 
+    protected static array $logExceptAttributes = ['slug'];
+
     protected $table = 'categories';
 
     protected $guarded = [];
