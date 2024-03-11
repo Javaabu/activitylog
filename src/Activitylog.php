@@ -2,7 +2,7 @@
 
 namespace Javaabu\Activitylog;
 
-abstract class Activitylog
+class Activitylog
 {
     /**
      * Indicates if migrations will be run.
