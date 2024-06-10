@@ -2,7 +2,8 @@
 
 namespace Javaabu\Activitylog\Models;
 
-use App\Models\User;
+use Illuminate\Contracts\Auth\Access\Authorizable;
+use Illuminate\Database\Eloquent\Model;
 use Javaabu\Helpers\AdminModel\AdminModel;
 use Javaabu\Helpers\AdminModel\IsAdminModel;
 use Javaabu\Activitylog\SubjectTypes;
@@ -93,17 +94,23 @@ class Activity extends BaseActivity implements AdminModel
     /**
      * Get the allowed subjects for the user
      *
-     * @param User $user
+     * @param Authorizable $user
      * @return array
      */
-    public function allowedSubjects(User $user)
+    public function allowedSubjects(Authorizable $user)
     {
         $allowed = [];
 
         $types = SubjectTypes::getTypes();
         foreach ($types as $type) {
-            if ($user->can('create', $type)) {
-                $allowed[] = (new $type())->getMorphClass();
+            /** @var Model $model_instance */
+            $model_instance = new $type();
+            $allowed = method_exists($model_instance, 'canViewActivityLogs')
+                        ? $model_instance->canViewActivityLogs($user) :
+                          $user->can('create', $type);
+
+            if ($allowed) {
+                $allowed[] = $model_instance->getMorphClass();
             }
         }
 
