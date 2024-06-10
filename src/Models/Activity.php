@@ -105,11 +105,11 @@ class Activity extends BaseActivity implements AdminModel
         foreach ($types as $type) {
             /** @var Model $model_instance */
             $model_instance = new $type();
-            $allowed = method_exists($model_instance, 'canViewActivityLogs')
+            $is_allowed = method_exists($model_instance, 'canViewActivityLogs')
                         ? $model_instance->canViewActivityLogs($user) :
                           $user->can('create', $type);
 
-            if ($allowed) {
+            if ($is_allowed) {
                 $allowed[] = $model_instance->getMorphClass();
             }
         }
