@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/activitylog.svg?style=flat-square)](https://packagist.org/packages/javaabu/activitylog)
 [![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
-[![Quality Score](https://img.shields.io/scrutinizer/g/javaabu/activitylog.svg?style=flat-square)](https://scrutinizer-ci.com/g/javaabu/activitylog)
+![Code Coverage Badge](./.github/coverage.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/javaabu/activitylog.svg?style=flat-square)](https://packagist.org/packages/javaabu/activitylog)
 
 Customized version of spatie/laravel-activitylog
