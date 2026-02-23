@@ -80,8 +80,7 @@ class ActivityLogTest extends TestCase
         $this->assertEquals('apple', $new['slug']);
     }
 
-    /** @test */
-    public function it_logs_model_create_events(): void
+    public function test_it_logs_model_create_events(): void
     {
         $category = new Category(['name' => 'Apple', 'slug' => 'apple']);
         $category->save();
@@ -106,8 +105,7 @@ class ActivityLogTest extends TestCase
         $this->assertEquals('apple', $new['slug']);
     }
 
-    /** @test */
-    public function it_logs_model_update_events(): void
+    public function test_it_logs_model_update_events(): void
     {
         $category = new Category(['name' => 'Apple', 'slug' => 'apple']);
         $category->save();
@@ -137,8 +135,7 @@ class ActivityLogTest extends TestCase
         $this->assertEquals('orange', $new['slug']);
     }
 
-    /** @test */
-    public function it_ignores_changes_to_attributes_marked_to_ignore(): void
+    public function test_it_ignores_changes_to_attributes_marked_to_ignore(): void
     {
         $category = new CategoryIgnoreTimestamps(['name' => 'Apple', 'slug' => 'apple']);
         $category->save();
@@ -153,8 +150,7 @@ class ActivityLogTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_does_not_log_hidden_attributes(): void
+    public function test_it_does_not_log_hidden_attributes(): void
     {
         $category = new CategoryIgnoreHiddenSlug(['name' => 'Apple', 'slug' => 'apple']);
         $category->save();
