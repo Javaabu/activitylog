@@ -9,7 +9,7 @@ Customized version of spatie/laravel-activitylog
 
 ## Documentation
 
-You'll find the documentation on [https://docs.javaabu.com/docs/activitylog](https://docs.javaabu.com/docs/activitylog).
+You'll find the documentation on [https://docs.javaabu.com/activitylog](https://docs.javaabu.com/activitylog).
 
 Find yourself stuck using the package? Found a bug? Do you have general questions or suggestions for improving this package? Feel free to create an [issue](../../issues) on GitHub, we'll try to address it as soon as possible.
 
