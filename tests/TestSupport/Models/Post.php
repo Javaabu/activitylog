@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Javaabu\Activitylog\Tags\ActivityTag;
 use Javaabu\Activitylog\Tests\TestSupport\Enums\PostStatuses;
 use Javaabu\Activitylog\Tests\TestSupport\Factories\PostFactory;
 use Javaabu\Activitylog\Traits\LogsActivity;
@@ -36,6 +37,14 @@ class Post extends Model
         return [
             'status' => PostStatuses::class,
             'published_at' => 'datetime',
+        ];
+    }
+
+    public static function activitylogTags(): array
+    {
+        return [
+            'published' => new ActivityTag('published', 'Published', 'success', 'circle-check'),
+            'archived' => 'deleted',
         ];
     }
 

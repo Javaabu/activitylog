@@ -114,4 +114,22 @@ return [
 
     'log_ip' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Tags
+    |--------------------------------------------------------------------------
+    |
+    | Each log is shown with the tag of its event (or, for logs without one,
+    | its description): a label, a javaabu/forms status colour and an icon.
+    | Add tags for your own events or change the built-in ones (created,
+    | updated, deleted, restored, rolled_back, login, ...). Labels are
+    | translated. Icons: see docs/basic-usage/tags.md.
+    |
+    */
+
+    'tags' => [
+        // 'published' => ['label' => 'Published', 'color' => 'success', 'icon' => 'circle-check'],
+        // 'deleted' => ['color' => 'warning'],
+    ],
+
 ];

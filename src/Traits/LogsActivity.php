@@ -3,6 +3,7 @@
 namespace Javaabu\Activitylog\Traits;
 
 use Illuminate\Support\Str;
+use Javaabu\Activitylog\Contracts\Tag;
 use Javaabu\Activitylog\Exceptions\UnsupportedLogProperty;
 use Javaabu\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity as SpatieLogsActivity;
@@ -100,11 +101,20 @@ trait LogsActivity
     }
 
     /**
-     * The tag of a log of this model, e.g. `published` for a custom event. Null uses the log's event.
+     * Tags for this model's logs, by event: a registered tag's key or a Tag
+     *
+     * ```php
+     * public static function activitylogTags(): array
+     * {
+     *     return ['published' => new ActivityTag('published', 'Published', 'success', 'circle-check')];
+     * }
+     * ```
+     *
+     * @return array<string, string|Tag>
      */
-    public function activitylogTag(Activity $activity): ?string
+    public static function activitylogTags(): array
     {
-        return null;
+        return [];
     }
 
     /**

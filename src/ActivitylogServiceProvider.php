@@ -28,6 +28,9 @@ class ActivitylogServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'activitylog');
+
         if ($this->app->runningInConsole()) {
             $this->registerMigrations();
             $this->registerPublishing();

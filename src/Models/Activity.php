@@ -2,7 +2,10 @@
 
 namespace Javaabu\Activitylog\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Javaabu\Activitylog\Activitylog;
+use Javaabu\Activitylog\Contracts\Tag;
 use Spatie\Activitylog\Models\Activity as BaseActivity;
 
 /**
@@ -101,5 +104,61 @@ class Activity extends BaseActivity
     public function hasLoggedChanges(): bool
     {
         return $this->changedAttributes() !== [];
+    }
+
+    /**
+     * The tag the log is shown with
+     *
+     * The subject model's activitylogTags() map wins, then the tag registered for the event, then
+     * (for logs without an event, such as javaabu/auth's) the tag registered for the description.
+     */
+    public function tag(): Tag
+    {
+        $key = $this->tagKey();
+
+        $model = Activitylog::morphedModel($this->subject_type);
+
+        if ($model && method_exists($model, 'activitylogTags')) {
+            $tag = $model::activitylogTags()[$this->event ?: $this->description] ?? null;
+
+            if ($tag instanceof Tag) {
+                return $tag;
+            }
+
+            if (is_string($tag)) {
+                return Activitylog::tag($tag);
+            }
+        }
+
+        return Activitylog::tag($key);
+    }
+
+    /**
+     * The event, or the description when the log has no event
+     */
+    public function tagKey(): ?string
+    {
+        if ($this->event) {
+            return $this->event;
+        }
+
+        return Activitylog::hasTag($this->description) ? $this->description : null;
+    }
+
+    /**
+     * Logs with a tag: the event, or the description when there's no event
+     *
+     * @param  string|array<int, string>  $tags
+     */
+    public function scopeTagged(Builder $query, string|array $tags): Builder
+    {
+        $tags = Arr::wrap($tags);
+
+        return $query->where(function (Builder $query) use ($tags) {
+            $query->whereIn('event', $tags)
+                ->orWhere(function (Builder $query) use ($tags) {
+                    $query->whereNull('event')->whereIn('description', $tags);
+                });
+        });
     }
 }
