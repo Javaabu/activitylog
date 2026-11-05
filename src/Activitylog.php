@@ -4,12 +4,15 @@ namespace Javaabu\Activitylog;
 
 use BackedEnum;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
 use Javaabu\Activitylog\Contracts\Tag;
 use Javaabu\Activitylog\Enums\ActivityTags;
+use Javaabu\Activitylog\Http\Resources\ActivityResource;
 use Javaabu\Activitylog\Models\Activity;
 use Javaabu\Activitylog\Support\Icons;
 use Javaabu\Activitylog\Tags\ActivityTag;
@@ -304,6 +307,109 @@ class Activitylog
         }
 
         return null;
+    }
+
+    /**
+     * A model's latest logs that a user may see, for the history component on the app's own pages
+     *
+     * ```php
+     * return Inertia::render('Invoices/Show', [
+     *     'invoice' => $invoice,
+     *     'history' => Activitylog::history($invoice, $request->user(), route: 'admin.logs'),
+     * ]);
+     * ```
+     *
+     * @param  string  $route  the name prefix the log routes were registered with
+     * @return array{
+     *     logs: array<int, array<string, mixed>>,
+     *     url: string|null,
+     *     strings: array<string, string>
+     * }
+     */
+    public static function history(Model $subject, ?Model $user = null, int $limit = 10, string $route = 'logs'): array
+    {
+        $user ??= auth()->user();
+
+        $logs = static::historyQuery($subject, $user)->limit($limit)->get();
+
+        $url = Route::has("{$route}.index") && $user?->can('viewAny', static::activityModel())
+            ? route("{$route}.index", ['subject_type' => $subject->getMorphClass(), 'subject_id' => $subject->getKey()])
+            : null;
+
+        return [
+            'logs' => $logs->map(fn (Activity $log) => static::historyItem($log, $route))->all(),
+            'url' => $url,
+            'strings' => static::strings(),
+        ];
+    }
+
+    /**
+     * The logs of a model that a user may see, newest first
+     *
+     * @return Builder<Activity>
+     */
+    public static function historyQuery(Model $subject, ?Model $user = null): Builder
+    {
+        return static::activityModel()::query()
+            ->visibleTo($user)
+            ->forSubject($subject)
+            ->with(['causer', 'subject'])
+            ->latest('created_at')
+            ->latest((new (static::activityModel()))->getKeyName());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function historyItem(Activity $log, string $route): array
+    {
+        $data = (new ActivityResource($log))->resolve(request());
+
+        $data['links']['show'] = Route::has("{$route}.show") ? route("{$route}.show", $log->getKey()) : null;
+
+        return $data;
+    }
+
+    /**
+     * The translated text of the log pages and components, for the React pages and components
+     *
+     * @return array<string, string>
+     */
+    public static function strings(): array
+    {
+        return [
+            'title' => __('Activity log'),
+            'date' => __('Date'),
+            'tag' => __('Tag'),
+            'description' => __('Description'),
+            'user' => __('User'),
+            'record' => __('Record'),
+            'ip' => __('IP address'),
+            'log_name' => __('Log'),
+            'actions' => __('Actions'),
+            'view' => __('View'),
+            'history' => __('History'),
+            'changes' => __('Changes'),
+            'attribute' => __('Attribute'),
+            'old_value' => __('Old value'),
+            'new_value' => __('New value'),
+            'current_value' => __('Current value'),
+            'restored_value' => __('Value after rolling back'),
+            'properties' => __('Details'),
+            'no_changes' => __('No changes were logged.'),
+            'no_logs' => __('No activity yet'),
+            'no_matching_logs' => __('No activity matches these filters.'),
+            'rollback' => __('Roll back'),
+            'rollback_title' => __('Roll back to this version'),
+            'rollback_intro' => __('These attributes will be restored to the values they had after this log. The rollback is logged.'),
+            'cancel' => __('Cancel'),
+            'back' => __('Back to the activity log'),
+            'back_to_log' => __('Back to the log'),
+            'system' => __('System'),
+            'deleted_user' => __('A deleted user'),
+            'deleted_record' => __('Deleted'),
+            'all_activity' => __('All activity'),
+        ];
     }
 
     /**

@@ -67,6 +67,7 @@ class ActivityLogsController extends Controller
             'can_export' => $this->canExport($request),
             'export_formats' => $this->exportFormats(),
             'routes' => $this->routeNames($request),
+            'urls' => $this->urls($request),
             'strings' => $this->views->isInertia() ? $this->strings() : null,
             'title' => $subject ? __('History of :subject', ['subject' => $subject['name']]) : __('Activity log'),
         ]);
@@ -90,6 +91,7 @@ class ActivityLogsController extends Controller
             'properties' => $log->customProperties(),
             'can_rollback' => (bool) $request->user()?->can('rollback', $log),
             'routes' => $this->routeNames($request),
+            'urls' => $this->urls($request, $log),
             'strings' => $this->views->isInertia() ? $this->strings() : null,
             'title' => __('Log #:id', ['id' => $log->getKey()]),
         ]);
@@ -114,6 +116,7 @@ class ActivityLogsController extends Controller
             'log' => $this->views->isInertia() ? (new ActivityResource($log))->detailed()->resolve($request) : $log,
             'changes' => $changes,
             'routes' => $this->routeNames($request),
+            'urls' => $this->urls($request, $log),
             'strings' => $this->views->isInertia() ? $this->strings() : null,
             'title' => __('Roll back to log #:id', ['id' => $log->getKey()]),
         ]);
@@ -256,40 +259,20 @@ class ActivityLogsController extends Controller
      */
     protected function strings(): array
     {
+        return Activitylog::strings();
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    protected function urls(Request $request, ?Activity $log = null): array
+    {
         return [
-            'title' => __('Activity log'),
-            'date' => __('Date'),
-            'tag' => __('Tag'),
-            'description' => __('Description'),
-            'user' => __('User'),
-            'record' => __('Record'),
-            'ip' => __('IP address'),
-            'log_name' => __('Log'),
-            'event' => __('Event'),
-            'actions' => __('Actions'),
-            'view' => __('View'),
-            'history' => __('History'),
-            'changes' => __('Changes'),
-            'attribute' => __('Attribute'),
-            'old_value' => __('Old value'),
-            'new_value' => __('New value'),
-            'current_value' => __('Current value'),
-            'restored_value' => __('Value after rolling back'),
-            'properties' => __('Details'),
-            'no_changes' => __('No changes were logged.'),
-            'no_logs' => __('No activity yet'),
-            'no_matching_logs' => __('No activity matches these filters.'),
-            'rollback' => __('Roll back'),
-            'rollback_title' => __('Roll back to this version'),
-            'rollback_intro' => __('These attributes will be restored to the values they had after this log. The rollback is logged.'),
-            'confirm_rollback' => __('Roll back the record?'),
-            'cancel' => __('Cancel'),
-            'back' => __('Back to the activity log'),
-            'back_to_log' => __('Back to the log'),
-            'system' => __('System'),
-            'deleted_record' => __('Deleted'),
-            'all_activity' => __('All activity'),
-            'export' => __('Export'),
+            'index' => route($this->routeName($request, 'index')),
+            'show' => $log ? route($this->routeName($request, 'show'), $log->getKey()) : null,
+            'rollback' => $log && Route::has($this->routeName($request, 'rollback'))
+                ? route($this->routeName($request, 'rollback'), $log->getKey())
+                : null,
         ];
     }
 

@@ -6,14 +6,7 @@
 @props(['subject', 'limit' => 10, 'route' => 'logs', 'title' => null])
 @php
     $user = auth()->user();
-    $logs = \Javaabu\Activitylog\Activitylog::activityModel()::query()
-        ->visibleTo($user)
-        ->forSubject($subject)
-        ->with(['causer', 'subject'])
-        ->latest('created_at')
-        ->latest('id')
-        ->limit($limit)
-        ->get();
+    $logs = \Javaabu\Activitylog\Activitylog::historyQuery($subject, $user)->limit($limit)->get();
     $routes = [
         'index' => "{$route}.index",
         'show' => "{$route}.show",

@@ -65,6 +65,8 @@ class ActivityResource extends JsonResource
                 'history' => $this->subject_type ? $this->historyUrl($prefix) : null,
             ],
             'created_at' => $this->created_at?->toIso8601String(),
+            'created_at_for_humans' => $this->created_at?->diffForHumans(),
+            'created_at_formatted' => $this->created_at?->isoFormat('LLL'),
         ];
     }
 

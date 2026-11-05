@@ -17,7 +17,7 @@
     </x-forms::table.cell>
     <x-forms::table.cell name="actions" :label="__('Actions')">
         @if(\Illuminate\Support\Facades\Route::has($routes['show']) && auth()->user()?->can('view', $log))
-            <x-forms::link-button :url="route($routes['show'], $log->getKey())" color="secondary" size="sm" start-icon="eye">
+            <x-forms::link-button :url="route($routes['show'], $log->getKey())" color="secondary" size="sm">
                 {{ __('View') }}
             </x-forms::link-button>
         @endif
