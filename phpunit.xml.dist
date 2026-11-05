@@ -8,6 +8,11 @@
     <testsuites>
         <testsuite name="Test Suite">
             <directory>tests</directory>
+            <exclude>tests/Translatable</exclude>
+        </testsuite>
+        <!-- Needs javaabu/translatable; CI also runs the other suite without it -->
+        <testsuite name="Translatable">
+            <directory>tests/Translatable</directory>
         </testsuite>
     </testsuites>
     <source>

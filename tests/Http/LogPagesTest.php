@@ -220,4 +220,27 @@ class LogPagesTest extends TestCase
         $this->assertStringNotContainsString('data-activity-tag="created"', $html);
         $this->assertStringContainsString(url("/logs?subject_type=post&amp;subject_id={$post->id}"), $html);
     }
+
+    #[Test]
+    public function the_pages_are_in_dhivehi(): void
+    {
+        app()->setLocale('dv');
+
+        $this->actingAs($this->userWith(['view_all_logs'], ['name' => 'އަހުމަދު']));
+
+        $post = $this->makePost(['title' => 'ރިޕޯޓު']);
+        $post->update(['title' => 'ފައިނަލް']);
+        $log = $post->activitiesAsSubject()->latest('id')->first();
+
+        $this->get('/logs')
+            ->assertOk()
+            ->assertSee('dir="rtl"', false)
+            ->assertSee('ހަރަކާތްތަކުގެ ލޮގް')
+            ->assertSee('ބަދަލުކުރެވިއްޖެ');
+
+        $this->get("/logs/{$log->id}")
+            ->assertOk()
+            ->assertSee('<bdi>އަހުމަދު</bdi> <bdi>Post</bdi> <bdi>ފައިނަލް</bdi> ގެ <bdi>title</bdi>، <bdi>ރިޕޯޓު</bdi> އިން <bdi>ފައިނަލް</bdi> އަށް ބަދަލުކޮށްފި', false)
+            ->assertSee('ކުރީގެ އަގު');
+    }
 }

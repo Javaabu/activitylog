@@ -1,6 +1,6 @@
 <?php
 
-namespace Javaabu\Activitylog\Tests\Feature;
+namespace Javaabu\Activitylog\Tests\Translatable;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Javaabu\Activitylog\Activitylog;
