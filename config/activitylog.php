@@ -1,5 +1,6 @@
 <?php
 
+use Javaabu\Activitylog\Descriptions\Describer;
 use Javaabu\Activitylog\Models\Activity;
 use Spatie\Activitylog\Actions\CleanActivityLogAction;
 use Spatie\Activitylog\Actions\LogActivityAction;
@@ -131,5 +132,26 @@ return [
         // 'published' => ['label' => 'Published', 'color' => 'success', 'icon' => 'circle-check'],
         // 'deleted' => ['color' => 'warning'],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Descriptions
+    |--------------------------------------------------------------------------
+    |
+    | Logs are described in the reader's language when they're shown: "Ahmed
+    | updated the status of Invoice #12 from Draft to Paid". Describe your own
+    | events here, for every model or for one. Templates are translated and
+    | take :causer, :subject, :type, :attribute, :attributes, :count, :old,
+    | :new, :tag, :date and :description. The describer can be replaced with
+    | a subclass.
+    |
+    */
+
+    'descriptions' => [
+        // 'published' => ':causer published :type :subject',
+        // App\Models\Invoice::class => ['paid' => ':causer marked :type :subject as paid'],
+    ],
+
+    'describer' => Describer::class,
 
 ];

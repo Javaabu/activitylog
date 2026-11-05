@@ -3,7 +3,10 @@
 namespace Javaabu\Activitylog;
 
 use BackedEnum;
+use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Javaabu\Activitylog\Contracts\Tag;
 use Javaabu\Activitylog\Enums\ActivityTags;
@@ -24,6 +27,9 @@ class Activitylog
 
     /** @var array<string, Tag>|null Built-in, config and registered tags, merged */
     protected static ?array $resolved_tags = null;
+
+    /** @var array<string, array<string, Closure|string>> Model class (or `*`) => event => description */
+    protected static array $descriptions = [];
 
     /**
      * Don't load the package's migrations; publish them with `--tag=activitylog-migrations` instead
@@ -181,5 +187,81 @@ class Activitylog
     {
         static::$tags = [];
         static::$resolved_tags = null;
+    }
+
+    /**
+     * Describe an event (or a description, for logs without an event), for every model or one
+     *
+     * The description is a template with placeholders (:causer, :subject, :type, :attribute,
+     * :attributes, :count, :old, :new, :tag, :date, :description), translated when used, or a
+     * closure that gets the log and the placeholder values and returns a string or a Description.
+     *
+     * ```php
+     * Activitylog::describe('paid', ':causer marked :type :subject as paid', Invoice::class);
+     * Activitylog::describe('sent', fn (Activity $log, array $values) => __(...));
+     * ```
+     *
+     * @param  string|array<int, string>  $event
+     * @param  class-string|null  $model
+     */
+    public static function describe(string|array $event, Closure|string $description, ?string $model = null): void
+    {
+        foreach (Arr::wrap($event) as $key) {
+            static::$descriptions[$model ?? '*'][$key] = $description;
+        }
+    }
+
+    /**
+     * The registered description of an event: for the model first (registered, then config),
+     * then for every model
+     *
+     * @param  class-string|null  $model
+     */
+    public static function findDescription(?string $event, ?string $model = null): Closure|string|null
+    {
+        if ($event === null || $event === '') {
+            return null;
+        }
+
+        $config = config('activitylog.descriptions', []);
+
+        if ($model) {
+            $found = static::$descriptions[$model][$event]
+                ?? (is_array($config[$model] ?? null) ? ($config[$model][$event] ?? null) : null);
+
+            if ($found !== null) {
+                return $found;
+            }
+        }
+
+        $global = $config[$event] ?? null;
+
+        return static::$descriptions['*'][$event] ?? (is_array($global) ? null : $global);
+    }
+
+    public static function forgetDescriptions(): void
+    {
+        static::$descriptions = [];
+    }
+
+    /**
+     * What a model is called in descriptions and pages: its activitylogDisplayName(), or its
+     * name, title, label, number or email, or `#` and its key
+     */
+    public static function displayName(Model $model): string
+    {
+        if (method_exists($model, 'activitylogDisplayName')) {
+            return (string) $model->activitylogDisplayName();
+        }
+
+        foreach (['name', 'title', 'label', 'number', 'email'] as $attribute) {
+            $value = $model->getAttribute($attribute);
+
+            if (is_scalar($value) && (string) $value !== '') {
+                return (string) $value;
+            }
+        }
+
+        return "#{$model->getKey()}";
     }
 }

@@ -51,6 +51,7 @@ abstract class TestCase extends BaseTestCase
     protected function tearDown(): void
     {
         Activitylog::forgetTags();
+        Activitylog::forgetDescriptions();
 
         parent::tearDown();
     }

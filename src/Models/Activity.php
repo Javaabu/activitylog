@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Javaabu\Activitylog\Activitylog;
 use Javaabu\Activitylog\Contracts\Tag;
+use Javaabu\Activitylog\Descriptions\Describer;
+use Javaabu\Activitylog\Descriptions\Description;
 use Spatie\Activitylog\Models\Activity as BaseActivity;
 
 /**
@@ -160,5 +162,13 @@ class Activity extends BaseActivity
                     $query->whereNull('event')->whereIn('description', $tags);
                 });
         });
+    }
+
+    /**
+     * A readable sentence for the log, in the current locale
+     */
+    public function describe(): Description
+    {
+        return app(Describer::class)->describe($this);
     }
 }

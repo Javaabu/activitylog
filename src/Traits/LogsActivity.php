@@ -4,6 +4,7 @@ namespace Javaabu\Activitylog\Traits;
 
 use Illuminate\Support\Str;
 use Javaabu\Activitylog\Contracts\Tag;
+use Javaabu\Activitylog\Descriptions\Description;
 use Javaabu\Activitylog\Exceptions\UnsupportedLogProperty;
 use Javaabu\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity as SpatieLogsActivity;
@@ -118,11 +119,21 @@ trait LogsActivity
     }
 
     /**
-     * A readable description of a log of this model. Null uses the registered descriptions.
+     * A readable description of a log of this model, or null for the registered and built-in ones
      */
-    public function describeActivity(Activity $activity): ?string
+    public function describeActivity(Activity $activity): Description|string|null
     {
         return null;
+    }
+
+    /**
+     * Labels of attributes in descriptions and diffs, by attribute
+     *
+     * @return array<string, string>
+     */
+    public static function activitylogAttributeLabels(): array
+    {
+        return [];
     }
 
     /**

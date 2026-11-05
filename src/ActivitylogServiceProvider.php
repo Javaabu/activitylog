@@ -3,6 +3,7 @@
 namespace Javaabu\Activitylog;
 
 use Illuminate\Support\ServiceProvider;
+use Javaabu\Activitylog\Descriptions\Describer;
 use Javaabu\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Activity as SpatieActivity;
 
@@ -13,6 +14,12 @@ class ActivitylogServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/activitylog.php', 'activitylog');
 
         $this->useActivityModel();
+
+        $this->app->singleton(Describer::class, function () {
+            $class = config('activitylog.describer') ?: Describer::class;
+
+            return new $class;
+        });
     }
 
     /**
