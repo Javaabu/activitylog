@@ -7,9 +7,33 @@
 
 Activity logs for Laravel, built on [spatie/laravel-activitylog](https://github.com/spatie/laravel-activitylog) v5.
 
+- Sensible defaults: add `LogsActivity` and changed fillable attributes are logged, never hidden attributes, passwords or timestamps. Customize with spatie's `getActivitylogOptions()`.
+- Tags with colours and icons, and readable descriptions in the reader's language: "Ahmed updated the status of Invoice #12 from Draft to Paid".
+- An activity log, a record's history and each log's changes, in Blade or Inertia React, with filters.
+- Roll a record back to the version of a log, with a confirmation that shows the diff.
+- Export the filtered logs with javaabu/exports.
+- A policy and permissions through javaabu/permissions, for any guard and user model.
+- Dhivehi translations and right-to-left pages.
+
+```php
+use Javaabu\Activitylog\Traits\LogsActivity;
+
+class Invoice extends Model
+{
+    use LogsActivity;
+}
+
+// routes/web.php
+Route::activitylog(['guard' => 'web_admin', 'prefix' => 'admin/logs', 'name' => 'admin.logs']);
+```
+
+```blade
+<x-activitylog::history :subject="$invoice" route="admin.logs" />
+```
+
 ## Documentation
 
-You'll find the documentation on [https://docs.javaabu.com/activitylog](https://docs.javaabu.com/activitylog).
+You'll find the documentation on [https://docs.javaabu.com/activitylog](https://docs.javaabu.com/activitylog), and in [`docs/`](docs/intro.md). AI assistants can start from [`llms.txt`](llms.txt). Upgrading from v1? Read [`docs/upgrading.md`](docs/upgrading.md).
 
 Find yourself stuck using the package? Found a bug? Do you have general questions or suggestions for improving this package? Feel free to create an [issue](../../issues) on GitHub, we'll try to address it as soon as possible.
 
@@ -21,6 +45,7 @@ You can run the tests with
 
 ``` bash
 composer test
+pnpm install && pnpm test   # the React pages
 ```
 
 ## Changelog

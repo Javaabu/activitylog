@@ -2,6 +2,7 @@
 
 namespace Javaabu\Activitylog;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Javaabu\Activitylog\Descriptions\Describer;
@@ -13,6 +14,7 @@ use Javaabu\Exports\Exports;
 use Javaabu\Manifest\Concerns\RegistersAssets;
 use Javaabu\Manifest\Package;
 use Javaabu\Permissions\Permissions;
+use Spatie\Activitylog\Actions\LogActivityAction;
 use Spatie\Activitylog\Models\Activity as SpatieActivity;
 
 class ActivitylogServiceProvider extends ServiceProvider
@@ -37,6 +39,7 @@ class ActivitylogServiceProvider extends ServiceProvider
         $this->loadJsonTranslationsFrom(__DIR__ . '/../lang');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'activitylog');
 
+        $this->registerIpLogging();
         $this->registerFrontendAssets();
         $this->registerRouteMacros();
         $this->registerPermissions();
@@ -57,6 +60,25 @@ class ActivitylogServiceProvider extends ServiceProvider
         if (config('activitylog.activity_model') === SpatieActivity::class) {
             config(['activitylog.activity_model' => Activity::class]);
         }
+    }
+
+    /**
+     * Logs saved through spatie's buffer are bulk inserted without model events, so the IP is
+     * also set just before logging
+     */
+    protected function registerIpLogging(): void
+    {
+        if (Activitylog::$records_ip_before_logging) {
+            return;
+        }
+
+        Activitylog::$records_ip_before_logging = true;
+
+        LogActivityAction::beforeLogging(function (Model $activity) {
+            if ($activity instanceof Activity) {
+                $activity->recordIp();
+            }
+        });
     }
 
     /**

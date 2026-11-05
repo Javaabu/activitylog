@@ -13,6 +13,7 @@ use Javaabu\Activitylog\Tests\TestSupport\Models\Post;
 use Javaabu\Activitylog\Tests\TestSupport\Models\User;
 use Javaabu\Activitylog\Traits\LogsActivity;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\Activitylog\Support\ActivityBuffer;
 
 class LoggingTest extends TestCase
 {
@@ -38,6 +39,18 @@ class LoggingTest extends TestCase
 
         $this->assertEquals('ރިޕޯޓު', $log->newValues()['title']);
         $this->assertEquals([], $log->oldValues());
+    }
+
+    #[Test]
+    public function it_saves_the_ip_of_buffered_logs(): void
+    {
+        config(['activitylog.buffer.enabled' => true]);
+
+        $post = Post::create(['title' => 'Report', 'slug' => 'report']);
+
+        app(ActivityBuffer::class)->flush();
+
+        $this->assertEquals('127.0.0.1', $post->activitiesAsSubject()->first()->ip);
     }
 
     #[Test]

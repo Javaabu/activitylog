@@ -1,0 +1,44 @@
+# javaabu/activitylog
+
+> Activity logs for Laravel, built on spatie/laravel-activitylog v5. Add the LogsActivity trait to a model and its changed fillable attributes are logged, never hidden or sensitive attributes, the key or timestamps; customize it with spatie's getActivitylogOptions() starting from defaultActivitylogOptions(). Every log has a tag (colour, icon, translated label) and a readable description in the reader's language. Route::activitylog() adds the activity log, a record's history and each log's changes (Blade or Inertia React, with javaabu/filters), rollback to a log's version, and exports with javaabu/exports; a policy and permissions come through javaabu/permissions.
+
+Paths are relative to this file. In a project, that's vendor/javaabu/activitylog/.
+
+## Rules
+
+- Log models with `use Javaabu\Activitylog\Traits\LogsActivity;`. Don't add v1's static properties (`$logAttributes`, `$ignoreChangedAttributes`, `$logExceptAttributes`): they throw. Override `getActivitylogOptions(): LogOptions` and start from `$this->defaultActivitylogOptions()`; `LogOptions` is `Spatie\Activitylog\Support\LogOptions` (spatie v5), not `Spatie\Activitylog\LogOptions`.
+- `logExcept()` replaces the list: merge `$this->activitylogExceptAttributes()` back in so hidden and sensitive attributes stay out.
+- This is spatie v5: `$model->activitiesAsSubject`, `$user->activitiesAsCauser`, `$log->attribute_changes` (or the package's `$log->changes()`, `newValues()`, `oldValues()`), `getProperty()`, `dontLogEmptyChanges()`, `Activity::defaultCauser()`. There's no `LogBatch`.
+- For anything that isn't a model event, use `activity()->performedOn($model)->causedBy($user)->event('sent')->log('sent')`. Always set an `event` so the log gets a tag and description; pass changes with `withChanges(['attributes' => [...], 'old' => [...]])`, not `withProperties()`.
+- Don't store readable sentences in `description`; they're built when shown with `$log->describe()`. Customize them with `describeActivity()` on the model, `Activitylog::describe($event, $template, Model::class)` or `activitylog.descriptions`. Templates go through `__()`; add Dhivehi to `lang/dv.json`.
+- Add tags for your events with `Activitylog::registerTags(MyTags::class)` (a backed enum implementing `Javaabu\Activitylog\Contracts\Tag`), `Activitylog::registerTag()`, `activitylog.tags`, or a model's static `activitylogTags()`. Colours are javaabu/forms status colours.
+- Register the pages yourself with `Route::activitylog([...])` inside the app's route group; pass `guard`, `prefix` and `name` for an admin guard. They aren't loaded automatically.
+- Permissions are `view_logs`, `view_all_logs`, `rollback_logs` and `export_logs`; run `php artisan permissions:sync`. Query what a user may see with `Activity::visibleTo($user)`. Override the policy with `config('permissions.policies')` or `Gate::policy()`, never by editing the package.
+- Show a record's history with `<x-activitylog::history :subject="$model" />` (Blade) or `Activitylog::history($model)` + `<ActivityHistory history={history} />` (React). Don't write your own query of `subject_type`/`subject_id`.
+- Roll back with `$log->rollback()->perform($user)` after `$user->can('rollback', $log)`; never by copying old values by hand. It restores the version right after the log and logs `rolled_back`.
+- Publish `config/activitylog.php` from this package (`--tag=activitylog-config`), not spatie's; `activity_model` must be `Javaabu\Activitylog\Models\Activity` or a subclass. Don't publish spatie's migration.
+- Use Thaana in tests of user-facing log behaviour, and logical CSS (`ms-`, `pe-`) in views.
+
+## Docs
+
+- [Introduction](docs/intro.md): what the package does
+- [Requirements](docs/requirements.md): PHP, Laravel, dependencies and optional packages
+- [Installation & Setup](docs/installation-and-setup.md): installing, migrating, permissions, routes, front end, cleaning, publishing
+- [Upgrading from v1](docs/upgrading.md): spatie v5, static properties to LogOptions, changed defaults, migration, removed classes
+- [Logging model events](docs/basic-usage/logging-model-events.md): the trait, defaults, customizing LogOptions, logging other things, reading logs
+- [Tags](docs/basic-usage/tags.md): built-in tags, colours and icons, config, enums, per-model tags, filtering
+- [Readable descriptions](docs/basic-usage/descriptions.md): the sentences, names and values, describing your events, describeActivity()
+- [Log pages](docs/basic-usage/log-pages.md): Route::activitylog(), who sees what, filters, history component, components, JSON API
+- [Rolling back](docs/basic-usage/rolling-back.md): how versions are worked out, authorization, reasons, Rollback API
+- [Exporting logs](docs/basic-usage/exporting.md): the Export button, queued or downloaded, the exports API, ActivityLogExport
+- [Permissions and policies](docs/advanced-usage/permissions-and-policies.md): permissions, ActivityPolicy, visibility, overriding, guards
+- [Overriding controllers and views](docs/advanced-usage/overriding-controllers-and-views.md): setting up Blade and Inertia, views, page props, the controller
+- [Translated models](docs/advanced-usage/translatable.md): optional javaabu/translatable support
+- [Dhivehi and right-to-left](docs/advanced-usage/dhivehi-and-rtl.md): translations, RTL, strings to review
+- [Configuration](docs/advanced-usage/configuration.md): every option in config/activitylog.php
+- [API reference](docs/advanced-usage/api-reference.md): every public class, method and React export
+- [AI assistants](docs/ai-assistants.md): Laravel Boost, and using these docs from other assistants
+- [Questions and Security](docs/questions-and-security.md): where to get help
+- [Changelog](docs/changelog.md): where changes are listed
+- [About Us](docs/about-us.md): Javaabu
+- [Contributing to the docs](docs/contributing-to-docs.md): how the docs are built

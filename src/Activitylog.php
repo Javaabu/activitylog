@@ -26,6 +26,9 @@ class Activitylog
     /** Whether the package loads its migrations. Turn off with ignoreMigrations(). */
     public static bool $runs_migrations = true;
 
+    /** Whether the IP callback was added to spatie's LogActivityAction (once per process) */
+    public static bool $records_ip_before_logging = false;
+
     /** @var array<string, Tag> Tags registered at runtime */
     protected static array $tags = [];
 

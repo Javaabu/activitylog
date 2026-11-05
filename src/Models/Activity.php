@@ -21,13 +21,19 @@ class Activity extends BaseActivity
 {
     protected static function booted(): void
     {
-        static::creating(function (Activity $activity) {
-            if (! config('activitylog.log_ip', true)) {
-                return;
-            }
+        static::creating(fn (Activity $activity) => $activity->recordIp());
+    }
 
-            $activity->ip ??= request()->ip();
-        });
+    /**
+     * Save the request's IP address with the log, unless `activitylog.log_ip` is off
+     */
+    public function recordIp(): void
+    {
+        if (! config('activitylog.log_ip', true)) {
+            return;
+        }
+
+        $this->ip ??= request()->ip();
     }
 
     public function getTable(): string
