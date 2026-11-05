@@ -1,52 +1,117 @@
 <?php
 
+use Javaabu\Activitylog\Models\Activity;
+use Spatie\Activitylog\Actions\CleanActivityLogAction;
+use Spatie\Activitylog\Actions\LogActivityAction;
+
+/*
+ * spatie/laravel-activitylog reads this file too: its options come first,
+ * then the ones javaabu/activitylog adds.
+ */
 return [
 
     /*
-     * If set to false, no activities will be saved to the database.
-     */
-    'enabled' => env('ACTIVITY_LOGGER_ENABLED', true),
+    |--------------------------------------------------------------------------
+    | Logging
+    |--------------------------------------------------------------------------
+    |
+    | Turn logging off with ACTIVITYLOG_ENABLED=false. Logs without a log name
+    | go to default_log_name. With default_auth_driver null, the causer is the
+    | user of the current guard.
+    |
+    */
 
-    /*
-     * When the clean-command is executed, all recording activities older than
-     * the number of days specified here will be deleted.
-     */
-    'delete_records_older_than_days' => 365,
+    'enabled' => env('ACTIVITYLOG_ENABLED', env('ACTIVITY_LOGGER_ENABLED', true)),
 
-    /*
-     * If no log name is passed to the activity() helper
-     * we use this default log name.
-     */
     'default_log_name' => 'default',
 
-    /*
-     * You can specify an auth driver here that gets user models.
-     * If this is null we'll use the current Laravel auth driver.
-     */
     'default_auth_driver' => null,
 
     /*
-     * If set to true, the subject returns soft deleted models.
-     */
-    'subject_returns_soft_deleted_models' => false,
+    |--------------------------------------------------------------------------
+    | Cleaning
+    |--------------------------------------------------------------------------
+    |
+    | `php artisan activitylog:clean` deletes logs older than this many days.
+    |
+    */
+
+    'clean_after_days' => 365,
 
     /*
-     * This model will be used to log activity.
-     * It should implement the Spatie\Activitylog\Contracts\Activity interface
-     * and extend Illuminate\Database\Eloquent\Model.
-     */
-    'activity_model' => \Javaabu\Activitylog\Models\Activity::class,
+    |--------------------------------------------------------------------------
+    | Subjects
+    |--------------------------------------------------------------------------
+    |
+    | Whether $activity->subject finds soft deleted models.
+    |
+    */
+
+    'include_soft_deleted_subjects' => false,
 
     /*
-     * This is the name of the table that will be created by the migration and
-     * used by the Activity model shipped with this package.
-     */
-    'table_name' => env('ACTIVITY_LOGGER_TABLE_NAME', 'activity_log'),
+    |--------------------------------------------------------------------------
+    | The activity model and table
+    |--------------------------------------------------------------------------
+    |
+    | A custom model must extend Javaabu\Activitylog\Models\Activity. The table
+    | and connection are the ones v1 used; null connection is the default.
+    |
+    */
+
+    'activity_model' => Activity::class,
+
+    'table_name' => env('ACTIVITYLOG_TABLE_NAME', env('ACTIVITY_LOGGER_TABLE_NAME', 'activity_log')),
+
+    'database_connection' => env('ACTIVITYLOG_DB_CONNECTION', env('ACTIVITY_LOGGER_DB_CONNECTION')),
 
     /*
-     * This is the database connection that will be used by the migration and
-     * the Activity model shipped with this package. In case it's not set
-     * Laravel's database.default will be used instead.
-     */
-    'database_connection' => env('ACTIVITY_LOGGER_DB_CONNECTION'),
+    |--------------------------------------------------------------------------
+    | Attributes never logged
+    |--------------------------------------------------------------------------
+    |
+    | default_except_attributes is left out of every model's logs, including
+    | models that use spatie's trait directly. sensitive_attributes (patterns
+    | allowed) and the model's hidden attributes are left out by the default
+    | options of javaabu/activitylog's LogsActivity trait.
+    |
+    */
+
+    'default_except_attributes' => [],
+
+    'sensitive_attributes' => [
+        'password',
+        'remember_token',
+        '*_token',
+        '*_secret',
+        'two_factor_recovery_codes',
+        'api_key',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Buffering and actions (spatie/laravel-activitylog)
+    |--------------------------------------------------------------------------
+    */
+
+    'buffer' => [
+        'enabled' => env('ACTIVITYLOG_BUFFER_ENABLED', false),
+    ],
+
+    'actions' => [
+        'log_activity' => LogActivityAction::class,
+        'clean_log' => CleanActivityLogAction::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | IP addresses
+    |--------------------------------------------------------------------------
+    |
+    | Save the request's IP address with each log.
+    |
+    */
+
+    'log_ip' => true,
+
 ];

@@ -4,22 +4,14 @@ namespace Javaabu\Activitylog;
 
 class Activitylog
 {
-    /**
-     * Indicates if migrations will be run.
-     *
-     * @var bool
-     */
-    public static $runsMigrations = true;
+    /** Whether the package loads its migrations. Turn off with ignoreMigrations(). */
+    public static bool $runs_migrations = true;
 
     /**
-     * Configure to not register its migrations.
-     *
-     * @return static
+     * Don't load the package's migrations; publish them with `--tag=activitylog-migrations` instead
      */
-    public static function ignoreMigrations()
+    public static function ignoreMigrations(): void
     {
-        static::$runsMigrations = false;
-
-        return new static;
+        static::$runs_migrations = false;
     }
 }

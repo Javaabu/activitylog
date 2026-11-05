@@ -1,11 +1,11 @@
 # Activity Log
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/activitylog.svg?style=flat-square)](https://packagist.org/packages/javaabu/activitylog)
-[![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
-![Code Coverage Badge](./.github/coverage.svg)
-[![Total Downloads](https://img.shields.io/packagist/dt/javaabu/activitylog.svg?style=flat-square)](https://packagist.org/packages/javaabu/activitylog)
+[![Tests](https://github.com/n4ff4h/activitylog/actions/workflows/tests.yml/badge.svg?branch=next-gen)](https://github.com/n4ff4h/activitylog/actions/workflows/tests.yml?query=branch%3Anext-gen)
+[![codecov](https://codecov.io/gh/Javaabu/activitylog/branch/next-gen/graph/badge.svg)](https://codecov.io/gh/Javaabu/activitylog/tree/next-gen)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/activitylog.svg)](https://packagist.org/packages/javaabu/activitylog)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
-Customized version of spatie/laravel-activitylog
+Activity logs for Laravel, built on [spatie/laravel-activitylog](https://github.com/spatie/laravel-activitylog) v5.
 
 ## Documentation
 
@@ -15,13 +15,12 @@ Find yourself stuck using the package? Found a bug? Do you have general question
 
 If you've found a bug regarding security please mail [info@javaabu.com](mailto:info@javaabu.com) instead of using the issue tracker.
 
-
 ## Testing
 
 You can run the tests with
 
 ``` bash
-./vendor/bin/phpunit
+composer test
 ```
 
 ## Changelog
@@ -41,7 +40,6 @@ If you discover any security related issues, please email [info@javaabu.com](mai
 - [Javaabu Pvt. Ltd.](https://github.com/javaabu)
 - [Arushad Ahmed (@dash8x)](http://arushad.org)
 - [All Contributors](../../contributors)
-
 
 ## License
 

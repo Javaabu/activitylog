@@ -3,47 +3,52 @@
 namespace Javaabu\Activitylog;
 
 use Illuminate\Support\ServiceProvider;
+use Javaabu\Activitylog\Models\Activity;
+use Spatie\Activitylog\Models\Activity as SpatieActivity;
 
 class ActivitylogServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     */
-    public function boot()
+    public function register(): void
     {
-        // declare publishes
+        $this->mergeConfigFrom(__DIR__ . '/../config/activitylog.php', 'activitylog');
+
+        $this->useActivityModel();
+    }
+
+    /**
+     * spatie/laravel-activitylog merges the same config key; when its defaults were
+     * merged first, swap its model for ours
+     */
+    protected function useActivityModel(): void
+    {
+        if (config('activitylog.activity_model') === SpatieActivity::class) {
+            config(['activitylog.activity_model' => Activity::class]);
+        }
+    }
+
+    public function boot(): void
+    {
         if ($this->app->runningInConsole()) {
             $this->registerMigrations();
-
-            $this->publishes([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
-            ], 'activitylog-migrations');
-
-            $this->publishes([
-                __DIR__ . '/../config/activitylog.php' => config_path('activitylog.php'),
-            ], 'activitylog-config');
+            $this->registerPublishing();
         }
     }
 
-
-    /**
-     * Register migration files.
-     *
-     * @return void
-     */
-    protected function registerMigrations()
+    protected function registerMigrations(): void
     {
-        if (Activitylog::$runsMigrations) {
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        if (Activitylog::$runs_migrations) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         }
     }
 
-    /**
-     * Register the application services.
-     */
-    public function register()
+    protected function registerPublishing(): void
     {
-        // merge package config with user defined config
-        $this->mergeConfigFrom(__DIR__ . '/../config/activitylog.php', 'activitylog');
+        $this->publishes([
+            __DIR__ . '/../config/activitylog.php' => config_path('activitylog.php'),
+        ], 'activitylog-config');
+
+        $this->publishes([
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
+        ], 'activitylog-migrations');
     }
 }
