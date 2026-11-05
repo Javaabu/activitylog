@@ -3,11 +3,13 @@
 namespace Javaabu\Activitylog\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Javaabu\Activitylog\Activitylog;
 use Javaabu\Activitylog\Contracts\Tag;
 use Javaabu\Activitylog\Descriptions\Describer;
 use Javaabu\Activitylog\Descriptions\Description;
+use Javaabu\Activitylog\Rollback\Rollback;
 use Spatie\Activitylog\Models\Activity as BaseActivity;
 
 /**
@@ -103,6 +105,16 @@ class Activity extends BaseActivity
         ]));
     }
 
+    /**
+     * The properties without the logged changes and the rollback bookkeeping
+     *
+     * @return array<string, mixed>
+     */
+    public function customProperties(): array
+    {
+        return Arr::except($this->properties?->toArray() ?? [], ['attributes', 'old', 'rolled_back_to', 'rolled_back_to_date']);
+    }
+
     public function hasLoggedChanges(): bool
     {
         return $this->changedAttributes() !== [];
@@ -170,5 +182,49 @@ class Activity extends BaseActivity
     public function describe(): Description
     {
         return app(Describer::class)->describe($this);
+    }
+
+    public function isCausedBy(Model $user): bool
+    {
+        return $this->causer_type === $user->getMorphClass()
+            && (string) $this->causer_id === (string) $user->getKey();
+    }
+
+    /**
+     * The logs a user may see: everything with view_all_logs; with view_logs, logs about
+     * models they may see and logs they caused; otherwise none
+     */
+    public function scopeVisibleTo(Builder $query, ?Model $user): Builder
+    {
+        if (! $user || ! $user->can('viewAny', static::class)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->can('viewAll', static::class)) {
+            return $query;
+        }
+
+        $types = Activitylog::viewableSubjectTypes($user);
+
+        return $query->where(function (Builder $query) use ($types, $user) {
+            $query->whereIn('subject_type', $types)
+                ->orWhere(function (Builder $query) use ($user) {
+                    $query->where('causer_type', $user->getMorphClass())
+                        ->where('causer_id', $user->getKey());
+                });
+        });
+    }
+
+    /**
+     * The rollback of the log's subject to the version right after this log
+     */
+    public function rollback(): Rollback
+    {
+        return Rollback::to($this);
+    }
+
+    public function canBeRolledBack(): bool
+    {
+        return $this->rollback()->isPossible();
     }
 }

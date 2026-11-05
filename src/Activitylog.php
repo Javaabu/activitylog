@@ -28,6 +28,9 @@ class Activitylog
     /** @var array<string, Tag>|null Built-in, config and registered tags, merged */
     protected static ?array $resolved_tags = null;
 
+    /** @var array<string, array<int, string>> User => the subject types they may see logs of */
+    protected static array $viewable_subject_types = [];
+
     /** @var array<string, array<string, Closure|string>> Model class (or `*`) => event => description */
     protected static array $descriptions = [];
 
@@ -242,6 +245,65 @@ class Activitylog
     public static function forgetDescriptions(): void
     {
         static::$descriptions = [];
+    }
+
+    /**
+     * The subject types (morph types) whose logs a user with `view_logs` may see: those whose
+     * model's static activitylogViewableBy($user) is true, or, without it, whose `viewAny` the
+     * user may
+     *
+     * @return array<int, string>
+     */
+    public static function viewableSubjectTypes(Model $user): array
+    {
+        $key = $user->getMorphClass() . ':' . $user->getKey();
+
+        if (isset(static::$viewable_subject_types[$key])) {
+            return static::$viewable_subject_types[$key];
+        }
+
+        $types = static::newActivityModel()
+            ->newQuery()
+            ->whereNotNull('subject_type')
+            ->distinct()
+            ->pluck('subject_type')
+            ->filter(function (string $type) use ($user) {
+                $model = static::morphedModel($type);
+
+                if (! $model) {
+                    return false;
+                }
+
+                if (method_exists($model, 'activitylogViewableBy')) {
+                    return (bool) $model::activitylogViewableBy($user);
+                }
+
+                return $user->can('viewAny', $model);
+            })
+            ->values()
+            ->all();
+
+        return static::$viewable_subject_types[$key] = $types;
+    }
+
+    /**
+     * Forget the subject types worked out for users, e.g. after their permissions change
+     */
+    public static function forgetViewableSubjectTypes(): void
+    {
+        static::$viewable_subject_types = [];
+    }
+
+    /**
+     * Where the pages link a causer or subject to: the model's activitylogUrl(), or nothing
+     */
+    public static function url(Model $model): ?string
+    {
+        if (method_exists($model, 'activitylogUrl')) {
+            return $model->activitylogUrl();
+        }
+
+        return null;
     }
 
     /**

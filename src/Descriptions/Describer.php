@@ -166,10 +166,13 @@ class Describer
     }
 
     /**
-     * A logged value as text: enum labels, Yes/No, lists, shortened long text, "empty"
+     * A logged value as text: enum labels, Yes/No, lists, "empty", and long text shortened
+     * unless $shorten is false
      */
-    public function formatValue(?string $model, string $attribute, mixed $value): string
+    public function formatValue(?string $model, string $attribute, mixed $value, bool $shorten = true): string
     {
+        $limit = $shorten ? $this->max_value_length : PHP_INT_MAX;
+
         if ($value === null || $value === '' || $value === []) {
             return __('empty');
         }
@@ -191,14 +194,14 @@ class Describer
         }
 
         if (is_array($value)) {
-            return Str::limit($this->formatList($value), $this->max_value_length);
+            return Str::limit($this->formatList($value), $limit);
         }
 
         if ($value instanceof Stringable || is_scalar($value)) {
-            return Str::limit(trim((string) $value), $this->max_value_length);
+            return Str::limit(trim((string) $value), $limit);
         }
 
-        return Str::limit((string) json_encode($value, JSON_UNESCAPED_UNICODE), $this->max_value_length);
+        return Str::limit((string) json_encode($value, JSON_UNESCAPED_UNICODE), $limit);
     }
 
     protected function fromSubject(Activity $activity): ?Description

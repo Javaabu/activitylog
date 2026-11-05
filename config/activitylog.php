@@ -1,7 +1,11 @@
 <?php
 
 use Javaabu\Activitylog\Descriptions\Describer;
+use Javaabu\Activitylog\Exports\ActivityLogExport;
+use Javaabu\Activitylog\Filters\ActivityFilters;
+use Javaabu\Activitylog\Http\Controllers\ActivityLogsController;
 use Javaabu\Activitylog\Models\Activity;
+use Javaabu\Activitylog\Policies\ActivityPolicy;
 use Spatie\Activitylog\Actions\CleanActivityLogAction;
 use Spatie\Activitylog\Actions\LogActivityAction;
 
@@ -153,5 +157,82 @@ return [
     ],
 
     'describer' => Describer::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rollback
+    |--------------------------------------------------------------------------
+    |
+    | Users with rollback_logs (and update on the record) can restore a record
+    | to the version of a log. Attributes in except are never restored.
+    |
+    */
+
+    'rollback' => [
+        'enabled' => true,
+        'except' => [],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exports
+    |--------------------------------------------------------------------------
+    |
+    | Users with export_logs can export the filtered logs with javaabu/exports
+    | (registered as the `activity_logs` export). When queue is on and the
+    | exports routes are registered (Route::exports(), named exports_route),
+    | exports run on the queue and the user is sent to the exports page;
+    | otherwise the file downloads right away.
+    |
+    */
+
+    'export' => [
+        'enabled' => true,
+        'queue' => true,
+        'exports_route' => 'exports.index',
+        'class' => ActivityLogExport::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Views
+    |--------------------------------------------------------------------------
+    |
+    | The pages Route::activitylog() renders: blade (javaabu/forms components)
+    | or inertia (React pages shipped through javaabu/manifest). Requests that
+    | expect JSON always get JSON. The Blade pages extend layout and fill
+    | layout_section.
+    |
+    */
+
+    'views' => env('ACTIVITYLOG_VIEWS', 'blade'),
+
+    'layout' => 'layouts.app',
+
+    'layout_section' => 'content',
+
+    'per_page' => 20,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Controllers, filters and authorization
+    |--------------------------------------------------------------------------
+    |
+    | Replace the controller or filters with subclasses, or pass `controller`
+    | to Route::activitylog(). The policy here is the package default; apps
+    | can also override it with config('permissions.policies') or
+    | Gate::policy(). Turn off register_permissions to register your own.
+    |
+    */
+
+    'controllers' => [
+        'logs' => ActivityLogsController::class,
+    ],
+
+    'filters' => ActivityFilters::class,
+
+    'policy' => ActivityPolicy::class,
+
+    'register_permissions' => true,
 
 ];
