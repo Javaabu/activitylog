@@ -29,12 +29,16 @@ class Diff implements Arrayable
 
     public static function forActivity(Activity $activity): self
     {
-        return new self(
+        $model = Activitylog::morphedModel($activity->subject_type);
+
+        [$attributes, $old, $new] = Translations::expand(
+            $model,
             $activity->changedAttributes(),
             $activity->oldValues(),
             $activity->newValues(),
-            Activitylog::morphedModel($activity->subject_type),
         );
+
+        return new self($attributes, $old, $new, $model);
     }
 
     /**
@@ -45,6 +49,16 @@ class Diff implements Arrayable
     public static function between(array $from, array $to, ?string $model = null): self
     {
         return new self(array_keys($to), $from, $to, $model);
+    }
+
+    /**
+     * The diff with a JSON-translatable model's `translations` shown per language and field
+     */
+    public function expanded(): self
+    {
+        [$attributes, $old, $new] = Translations::expand($this->model, $this->attributes, $this->old, $this->new);
+
+        return new self($attributes, $old, $new, $this->model);
     }
 
     public function isEmpty(): bool

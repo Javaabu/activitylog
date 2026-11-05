@@ -11,6 +11,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Javaabu\Activitylog\Activitylog;
 use Javaabu\Activitylog\Models\Activity;
+use Javaabu\Activitylog\Support\Translations;
 use Javaabu\Activitylog\Tags\ActivityTag;
 use Stringable;
 use Throwable;
@@ -62,9 +63,14 @@ class Describer
     public function replacements(Activity $activity): array
     {
         $model = Activitylog::morphedModel($activity->subject_type);
-        $attributes = $activity->changedAttributes();
-        $new = $activity->newValues();
-        $old = $activity->oldValues();
+
+        [$attributes, $old, $new] = Translations::expand(
+            $model,
+            $activity->changedAttributes(),
+            $activity->oldValues(),
+            $activity->newValues(),
+        );
+
         $first = $attributes[0] ?? null;
 
         return [
@@ -128,6 +134,12 @@ class Describer
      */
     public function attributeLabel(?string $model, string $attribute): string
     {
+        if ($translation = Translations::parseKey($attribute)) {
+            [$field, $locale] = $translation;
+
+            return "{$this->attributeLabel($model, $field)} (" . Translations::languageName($locale) . ')';
+        }
+
         if ($model && method_exists($model, 'activitylogAttributeLabels')) {
             $labels = $model::activitylogAttributeLabels();
 
@@ -171,6 +183,10 @@ class Describer
      */
     public function formatValue(?string $model, string $attribute, mixed $value, bool $shorten = true): string
     {
+        if ($translation = Translations::parseKey($attribute)) {
+            $attribute = $translation[0];
+        }
+
         $limit = $shorten ? $this->max_value_length : PHP_INT_MAX;
 
         if ($value === null || $value === '' || $value === []) {
@@ -289,7 +305,13 @@ class Describer
      */
     protected function updatedTemplate(Activity $activity, array $replacements): string
     {
-        $attributes = $activity->changedAttributes();
+        [$attributes, $old, $new] = Translations::expand(
+            Activitylog::morphedModel($activity->subject_type),
+            $activity->changedAttributes(),
+            $activity->oldValues(),
+            $activity->newValues(),
+        );
+
         $count = count($attributes);
 
         if ($count === 0) {
@@ -306,11 +328,11 @@ class Describer
 
         $attribute = $attributes[0];
 
-        if (! array_key_exists($attribute, $activity->oldValues()) || $activity->oldValues()[$attribute] === null) {
+        if (! array_key_exists($attribute, $old) || $old[$attribute] === null) {
             return ':causer set the :attribute of :type :subject to :new';
         }
 
-        if (($activity->newValues()[$attribute] ?? null) === null) {
+        if (($new[$attribute] ?? null) === null) {
             return ':causer cleared the :attribute of :type :subject';
         }
 

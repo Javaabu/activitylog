@@ -15,6 +15,7 @@ use Javaabu\Activitylog\Enums\ActivityTags;
 use Javaabu\Activitylog\Http\Resources\ActivityResource;
 use Javaabu\Activitylog\Models\Activity;
 use Javaabu\Activitylog\Support\Icons;
+use Javaabu\Activitylog\Support\Translations;
 use Javaabu\Activitylog\Tags\ActivityTag;
 
 /**
@@ -352,7 +353,8 @@ class Activitylog
     {
         return static::activityModel()::query()
             ->visibleTo($user)
-            ->forSubject($subject)
+            ->where('subject_type', $subject->getMorphClass())
+            ->whereIn('subject_id', Translations::relatedKeys($subject))
             ->with(['causer', 'subject'])
             ->latest('created_at')
             ->latest((new (static::activityModel()))->getKeyName());

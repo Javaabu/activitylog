@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Javaabu\Activitylog\Activitylog;
 use Javaabu\Activitylog\Descriptions\Describer;
+use Javaabu\Activitylog\Support\Translations;
 use Javaabu\Filters\DateRangeFilter;
 use Javaabu\Filters\Filters;
 use Javaabu\Filters\MultiSelectFilter;
@@ -72,7 +73,7 @@ class ActivityFilters extends Filters
             TextFilter::make('subject_id')
                 ->label(__('Record'))
                 ->hidden()
-                ->query(fn (Builder $query, string $value) => $query->where('subject_id', $value)),
+                ->query(fn (Builder $query, string $value) => $query->whereIn('subject_id', $this->subjectKeys($value))),
 
             TextFilter::make('causer_type')
                 ->label(__('User type'))
@@ -91,6 +92,24 @@ class ActivityFilters extends Filters
         return [
             Sort::make('created_at')->label(__('Date'))->defaultDirection('desc'),
         ];
+    }
+
+    /**
+     * The record and, for a DB-translatable model, its other language rows
+     *
+     * @return array<int, mixed>
+     */
+    protected function subjectKeys(string $id): array
+    {
+        $model = Activitylog::morphedModel($this->getValue('subject_type'));
+
+        if (! $model || ! Translations::isDbTranslatable($model)) {
+            return [$id];
+        }
+
+        $subject = $model::query()->find($id);
+
+        return $subject ? Translations::relatedKeys($subject) : [$id];
     }
 
     /**

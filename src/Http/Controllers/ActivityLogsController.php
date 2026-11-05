@@ -106,7 +106,7 @@ class ActivityLogsController extends Controller
 
         $this->authorizeAbility($request, 'rollback', $log);
 
-        $changes = $log->rollback()->changes()->rows();
+        $changes = $log->rollback()->changes()->expanded()->rows();
 
         if ($request->expectsJson()) {
             return response()->json(['data' => ['log' => (new ActivityResource($log))->resolve($request), 'changes' => $changes]]);
