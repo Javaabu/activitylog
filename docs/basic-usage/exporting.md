@@ -21,7 +21,7 @@ Headings and values are translated, so an export made in Dhivehi is in Dhivehi.
 
 # Queued or straight away
 
-When javaabu/exports' routes are registered (`Route::exports()`, with `exports.index` as the index route name), the export runs on the queue: the user is sent to the exports page and notified when the file is ready. Otherwise the file downloads straight away.
+When javaabu/exports' routes are registered (`Route::exports()`, with `exports.index` as the index route name), the export runs on the queue: the user is sent to the exports page and notified when the file is ready. They need javaabu/exports' `view_exports` permission to see it there. Otherwise the file downloads straight away.
 
 ```php
 // config/activitylog.php

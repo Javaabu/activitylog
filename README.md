@@ -1,7 +1,7 @@
 # Activity Log
 
-[![Tests](https://github.com/n4ff4h/activitylog/actions/workflows/tests.yml/badge.svg?branch=next-gen)](https://github.com/n4ff4h/activitylog/actions/workflows/tests.yml?query=branch%3Anext-gen)
-[![codecov](https://codecov.io/gh/Javaabu/activitylog/branch/next-gen/graph/badge.svg)](https://codecov.io/gh/Javaabu/activitylog/tree/next-gen)
+[![Tests](https://github.com/Javaabu/activitylog/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Javaabu/activitylog/actions/workflows/tests.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/Javaabu/activitylog/branch/main/graph/badge.svg)](https://codecov.io/gh/Javaabu/activitylog/tree/main)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/activitylog.svg)](https://packagist.org/packages/javaabu/activitylog)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 
