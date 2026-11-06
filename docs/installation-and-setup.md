@@ -82,9 +82,9 @@ See [Log pages](basic-usage/log-pages.md).
 
 # Front end
 
-The pages use javaabu/forms and javaabu/filters components. With javaabu/manifest's Vite plugin set up, the Blade pages need nothing else.
+The pages use javaabu/forms and javaabu/filters components. With javaabu/manifest's Vite plugin set up, the Blade pages need nothing else: activitylog's npm packages are only for its React pages, so `php artisan manifest:check` doesn't ask a Blade app to install React or @javaabu/forms for it.
 
-For the Inertia React pages, set the stack and install the front-end dependencies manifest lists:
+For the Inertia React pages, set the stack and install the front-end dependencies manifest lists. `manifest:check` includes the pages' packages once `@inertiajs/react` is in your `package.json` (or pass `--scope=pages`):
 
 ```dotenv
 ACTIVITYLOG_VIEWS=inertia

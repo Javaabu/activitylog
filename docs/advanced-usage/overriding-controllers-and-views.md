@@ -56,7 +56,7 @@ createInertiaApp({
 
 ```bash
 composer require inertiajs/inertia-laravel
-php artisan manifest:check   # prints the install command for anything missing
+php artisan manifest:check --scope=pages   # prints the install command for anything the pages need
 ```
 
 Wrap your app in `FormsProvider` (with the Onu and Inertia adapters) as @javaabu/forms describes, so the filter bar and the rollback form submit as Inertia visits. The pages read `flash.success` and `flash.error` from your shared props for messages; share them from the session:

@@ -123,5 +123,6 @@ Add both strings to `lang/dv.json`. See [references/tags-and-descriptions.md](re
 - Don't query `subject_type`/`subject_id` by hand for a history, and don't restore old values by hand; use `history()`/`<x-activitylog::history>` and `rollback()`.
 - Always scope log queries shown to users with `visibleTo($user)`.
 - Don't publish spatie's config or migration; this package's replace them.
+- A Blade-only app installs no npm packages for activitylog: they're declared for manifest's pages scope. For the Inertia pages, run `php artisan manifest:check --scope=pages` and install what it lists.
 
 See [references/common-mistakes.md](references/common-mistakes.md) for more.

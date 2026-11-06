@@ -83,7 +83,8 @@ class ActivitylogServiceProvider extends ServiceProvider
 
     /**
      * The Inertia pages (activitylog::Logs/Index) and the components apps can import as
-     * `@javaabu/activitylog`
+     * `@javaabu/activitylog`. The Blade pages register no scripts, so every npm package is
+     * for the pages: Blade-only apps aren't asked to install React.
      */
     protected function registerFrontendAssets(): void
     {
@@ -98,7 +99,7 @@ class ActivitylogServiceProvider extends ServiceProvider
                     'react' => '^18.3 || ^19.0',
                     'react-dom' => '^18.3 || ^19.0',
                     '@inertiajs/react' => '^2.0 || ^3.0',
-                ]);
+                ], for: 'pages');
         });
     }
 

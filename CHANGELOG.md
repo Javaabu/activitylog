@@ -16,6 +16,7 @@ All notable changes will be documented in this file
 - `ActivityPolicy` and the `view_logs`, `view_all_logs`, `rollback_logs` and `export_logs` permissions through javaabu/permissions; any guard
 - Optional javaabu/translatable support
 - Dhivehi translations and right-to-left views
+- The npm packages for the React pages are declared for javaabu/manifest's pages scope, so Blade apps aren't asked to install them
 - Docs for people and AI assistants, `llms.txt`, and a Laravel Boost guideline and skill
 
 ## 1.0.0 - 2024-02-05
