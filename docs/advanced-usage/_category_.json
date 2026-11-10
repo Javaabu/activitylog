@@ -1,10 +1,11 @@
 {
-    "position": 1.5,
+    "position": 1.31,
     "label": "Advanced Usage",
     "collapsible": true,
     "collapsed": false,
     "link": {
         "type": "generated-index",
-        "slug": "/generators/_categories/advanced-usage"
+        "slug": "/activitylog/_categories/advanced-usage",
+        "description": "Permissions, overrides, translated models, Dhivehi and every option."
     }
 }

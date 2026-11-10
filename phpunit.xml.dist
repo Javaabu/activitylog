@@ -8,6 +8,11 @@
     <testsuites>
         <testsuite name="Test Suite">
             <directory>tests</directory>
+            <exclude>tests/Translatable</exclude>
+        </testsuite>
+        <!-- Needs javaabu/translatable; CI also runs the other suite without it -->
+        <testsuite name="Translatable">
+            <directory>tests/Translatable</directory>
         </testsuite>
     </testsuites>
     <source>
@@ -15,11 +20,6 @@
             <directory>src</directory>
         </include>
     </source>
-    <logging>
-        <junit outputFile="build/report.junit.xml"/>
-        <testdoxHtml outputFile="build/coverage"/>
-        <testdoxText outputFile="build/coverage.txt"/>
-    </logging>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>

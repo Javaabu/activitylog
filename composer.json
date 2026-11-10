@@ -1,23 +1,86 @@
 {
     "name": "javaabu/activitylog",
-    "description": "Customized version of spatie/laravel-activitylog",
+    "description": "Activity logs for Laravel on spatie/laravel-activitylog: sensible defaults, tags, readable descriptions, log pages, rollback and exports",
     "homepage": "https://github.com/Javaabu/activitylog",
     "license": "MIT",
+    "keywords": [
+        "javaabu",
+        "laravel",
+        "activitylog",
+        "audit",
+        "history",
+        "rollback"
+    ],
     "authors": [
         {
             "name": "Arushad Ahmed",
-            "email": "arushad@javaabu.com"
+            "email": "arushad@javaabu.com",
+            "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/n4ff4h/exports",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/filters",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/forms",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/manifest",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/permissions",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Javaabu/stencil",
+            "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/n4ff4h/translatable",
+            "no-api": true
         }
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
-        "spatie/laravel-activitylog": "^4.7",
-        "javaabu/helpers": "^1.70"
+        "php": "^8.4",
+        "illuminate/database": "^12.0 || ^13.0",
+        "illuminate/http": "^12.0 || ^13.0",
+        "illuminate/routing": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0",
+        "illuminate/view": "^12.0 || ^13.0",
+        "javaabu/exports": "^2.0@dev",
+        "javaabu/filters": "^1.0@dev",
+        "javaabu/forms": "^2.0@dev",
+        "javaabu/manifest": "^1.0@dev",
+        "javaabu/permissions": "^3.0@dev",
+        "javaabu/stencil": "^1.0@dev",
+        "spatie/laravel-activitylog": "^5.1"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0 || ^8.0 || ^9.16 || ^10.0 || ^11.0",
-        "phpunit/phpunit": "^9.5 || ^10.5 || ^11.5.3 || ^12.5.8 || ^13.0.3"
+        "inertiajs/inertia-laravel": "^2.0",
+        "javaabu/boost-javaabu-guidelines": "^1.0",
+        "javaabu/translatable": "^3.0@dev",
+        "laravel/pint": "^1.24",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "phpunit/phpunit": "^11.5.3 || ^12.5.8"
+    },
+    "suggest": {
+        "inertiajs/inertia-laravel": "Renders the log pages with Inertia React when activitylog.views is inertia (^2.0)",
+        "javaabu/translatable": "Shows and rolls back changes to translated attributes per language (^3.0)"
     },
     "autoload": {
         "psr-4": {
@@ -29,15 +92,24 @@
             "Javaabu\\Activitylog\\Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-clover build/coverage.xml",
+        "lint": "vendor/bin/pint --test",
+        "format": "vendor/bin/pint"
+    },
     "extra": {
         "branch-alias": {
-            "dev-main": "1.0-dev"
+            "dev-next-gen": "2.x-dev"
         },
         "laravel": {
             "providers": [
                 "Javaabu\\Activitylog\\ActivitylogServiceProvider"
             ]
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true

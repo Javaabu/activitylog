@@ -1,5 +1,5 @@
 {
     "name": "Activity Log",
-    "description": "Customized version of spatie/laravel-activitylog",
-    "version": "1"
+    "description": "Activity logs for Laravel on spatie/laravel-activitylog: sensible defaults, tags, readable descriptions, log pages, rollback and exports",
+    "version": "2"
 }
